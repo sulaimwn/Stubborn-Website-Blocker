@@ -127,7 +127,8 @@ $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Exec
 $taskTrigger = New-ScheduledTaskTrigger -AtLogOn
 Register-ScheduledTask -TaskName "SocialBlockerRestore" -Action $taskAction -Trigger $taskTrigger -Force
 
-$taskTrigger2 = New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
+# Fix for SocialBlockerWatchdog trigger
+$taskTrigger2 = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
 Register-ScheduledTask -TaskName "SocialBlockerWatchdog" -Action $taskAction -Trigger $taskTrigger2 -Force
 
 # Apply initial block
