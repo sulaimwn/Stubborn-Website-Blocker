@@ -64,7 +64,7 @@ Restore-ScheduledTasks
 # Protect hosts file entries
 Protect-HostsEntries
 
-# Read existing hosts file
+# Read existing hosts file AFTER protecting entries
 $existingContent = Get-Content $hostsPath -ErrorAction SilentlyContinue
 
 # Add entries if they don't exist

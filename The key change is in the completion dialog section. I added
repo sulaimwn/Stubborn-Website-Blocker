@@ -1,3 +1,0 @@
-$doneButton.Add_Click({
-    $doneForm.Close()
-})
