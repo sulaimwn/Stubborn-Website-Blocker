@@ -45,12 +45,14 @@ During installation, you can:
 
 ## How this was built
 
-This was built using PowerShell and various tools:
+This was built using various tools and AI assistance:
 
 - **Language:** PowerShell
 - **GUI:** Windows Forms
 - **Persistence:** Scheduled tasks, registry entries, environment variables
 - **Uninstall complexity:** Multiple folders, registry entries, and shortcuts
+- **AI assistance:** Built using ArliAI GLM-4.5-Air (Derestricted) model from Hugging Face, served via RunPod with llama.cpp
+- **Development environment:** Coded using aider chat interface
 
 ## Warnings
 
