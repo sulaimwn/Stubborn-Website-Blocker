@@ -18,9 +18,7 @@ The blocking itself is simple and boring on purpose, which is what makes it reli
 1. **Hosts file.** The installer adds entries to the Windows hosts file (`C:\Windows\System32\drivers\etc\hosts`) that point each blocked domain at `127.0.0.1`. Because the hosts file is read by the OS before any DNS lookup, this blocks the sites in every browser and app at once, no extensions required.
 2. **Scheduled tasks** run in the background as SYSTEM on a short interval. They check that the hosts entries are still there and reapplies them if they're missing. This is the "stubborn" part: deleting the block by hand doesn't last, because the task restores it on the next pass.
 3. **Startup trigger.** The tasks also run at boot and logon, so the block survives restarts.
-4. **Multiple persistence layers** - registry entries, environment variables, confusing folders, and more make it hard to completely uninstall.
-
-That's the whole mechanism. No kernel drivers, no firmware tricks, nothing hidden from you. It's friction, not a trap (see Removing it below).
+4. **Multiple persistence layers** - registry entries, environment variables, confusing folders, and more make it hard to completely remove.
 
 ## Requirements
 
@@ -50,8 +48,7 @@ This was built using various tools and AI assistance:
 - **Language:** PowerShell
 - **GUI:** Windows Forms
 - **Persistence:** Scheduled tasks, registry entries, environment variables
-- **Uninstall complexity:** Multiple folders, registry entries, and shortcuts
-- **AI assistance:** Built using ArliAI GLM-4.5-Air (Derestricted) model from Hugging Face, served via RunPod with llama.cpp
+- **AI assistance:** Built using ArliAI GLM-4.5-Air (Derestricted) model from Hugging Face, served via RunPod with llama.cpp. Regular restricted models like Claude and Codex denied building this so I had to use a derestricted model.
 - **Development environment:** Coded using aider chat interface
 
 ## Warnings
