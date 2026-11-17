@@ -35,8 +35,34 @@ function Restore-ScheduledTasks {
     }
 }
 
+# Function to protect hosts file entries
+function Protect-HostsEntries {
+    $hostsPath = "C:\Windows\System32\drivers\etc\hosts"
+    
+    # Read existing hosts file
+    $existingContent = Get-Content $hostsPath -ErrorAction SilentlyContinue
+    
+    # Add SocialBlocker header if not present
+    $headerPresent = $false
+    foreach ($line in $existingContent) {
+        if ($line -match "# SocialBlocker entries") {
+            $headerPresent = $true
+            break
+        }
+    }
+    
+    if (-not $headerPresent) {
+        # Add header before our entries
+        $header = "`n# SocialBlocker entries - Do not modify below this line`n"
+        Add-Content $hostsPath $header
+    }
+}
+
 # Restore scheduled tasks first
 Restore-ScheduledTasks
+
+# Protect hosts file entries
+Protect-HostsEntries
 
 # Read existing hosts file
 $existingContent = Get-Content $hostsPath -ErrorAction SilentlyContinue
@@ -45,6 +71,10 @@ $existingContent = Get-Content $hostsPath -ErrorAction SilentlyContinue
 foreach ($site in $sitesToBlock) {
     $entry = "127.0.0.1    $site"
     if ($existingContent -notcontains $entry) {
-        Add-Content $hostsPath $entry
+        try {
+            Add-Content $hostsPath $entry
+        } catch {
+            Write-Host "Could not add entry for $site, hosts file may be in use"
+        }
     }
 }
