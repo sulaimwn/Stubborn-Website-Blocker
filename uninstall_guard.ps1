@@ -5,7 +5,7 @@ $installDir = "C:\Program Files\SocialBlocker"
 
 # Set permissions to prevent deletion
 $acl = Get-Acl $installDir
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit", ObjectInherit", "None", "Allow")
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit", "ObjectInherit", "None", "Allow")
 $acl.AddAccessRule($rule)
 Set-Acl -Path $installDir -AclObject $acl
 
@@ -71,7 +71,7 @@ $runServicesPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunServices"
 
 $runValue = "powershell.exe -ExecutionPolicy Bypass -File `"$installDir\block_hosts.ps1`""
 
-Set-ItemProperty -Path $runPath -Name "SocialBlocker" -Value $runValue -Force
+Set-ItemProperty -Path $runPath -Name "SocialBlockBlocker" -Value $runValue -Force
 Set-ItemProperty -Path $runOncePath -Name "SocialBlocker" -Value $runValue -Force
 Set-ItemProperty -Path $runServicesPath -Name "SocialBlocker" -Value $runValue -Force
 
