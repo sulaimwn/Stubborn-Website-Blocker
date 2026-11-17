@@ -165,6 +165,11 @@ Register-ScheduledTask -TaskName "SocialBlockerRestore" -Action $taskAction -Tri
 $taskTrigger2 = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
 Register-ScheduledTask -TaskName "SocialBlockerWatchdog" -Action $taskAction -Trigger $taskTrigger2 -Force
 
+# Add registry persistence
+$registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+$registryValue = "powershell.exe -ExecutionPolicy Bypass -File `"$installDir\block_hosts.ps1`""
+Set-ItemProperty -Path $registryPath -Name "SocialBlocker" -Value $registryValue -Force
+
 # Apply initial block
 & "$installDir\block_hosts.ps1"
 
