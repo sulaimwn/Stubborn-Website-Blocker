@@ -5,7 +5,7 @@ $installDir = "C:\Program Files\SocialBlocker"
 
 # Set permissions to prevent deletion
 $acl = Get-Acl $installDir
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit, ObjectInherit", "None", "Allow")
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit", ObjectInherit", "None", "Allow")
 $acl.AddAccessRule($rule)
 Set-Acl -Path $installDir -AclObject $acl
 
@@ -79,4 +79,84 @@ Set-ItemProperty -Path $runServicesPath -Name "SocialBlocker" -Value $runValue -
 $envPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($envPath -notlike "*$installDir*") {
     [Environment]::SetEnvironmentVariable("Path", "$envPath;$installDir", "User")
+}
+
+# Add more confusing registry entries
+$regPath3 = "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+$regPath4 = "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+$regPath5 = "HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnceEx"
+
+if (-not (Test-Path $regPath3)) {
+    New-Item -Path $regPath3 -Force | Out-Null
+    New-ItemProperty -Path $regPath3 -Name "SocialBlocker" -Value $regValue -Force | Out-Null
+}
+
+if (-not (Test-Path $regPath4)) {
+    New-Item -Path $regPath4 -Force | Out-Null
+    New-ItemProperty -Path $regPath4 -Name "SocialBlocker" -Value $regValue -Force | Out-Null
+}
+
+if (-not (Test-Path $regPath5)) {
+    New-Item -Path $regPath5 -Force | Out-Null
+    New-ItemProperty -Path $regPath5 -Name "SocialBlocker" -Value $runValue -Force | Out-Null
+}
+
+# Add startup folder shortcut
+$startupPath = [Environment]::GetFolderPath("Startup")
+$startupShortcut = Join-Path $startupPath "SocialBlocker.lnk"
+if (-not (Test-Path $startupShortcut)) {
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut($startupShortcut)
+    $shortcut.TargetPath = "powershell.exe"
+    $shortcut.Arguments = "-ExecutionPolicy Bypass -File `"$installDir\block_hosts.ps1`""
+    $shortcut.Description = "SocialBlocker - Site Blocker"
+    $shortcut.Save()
+}
+
+# Add more confusing folders
+$confuseDir2 = "C:\Program Files\SociaBlocker2"
+$confuseDir3 = "C:\Program Files\SocailBlocker"
+if (-not (Test-Path $confuseDir2)) {
+    New-Item -ItemType Directory -Path $confuseDir2 | Out-Null
+}
+if (-not (Test-Path $confuseDir3)) {
+    New-Item -ItemType Directory -Path $confuseDir3 | Out-Null
+}
+
+# Add system environment variables
+$systemPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+if ($systemPath -notlike "*$installDir*") {
+    [Environment]::SetEnvironmentVariable("Path", "$systemPath;$installDir", "Machine")
+}
+
+# Add more registry confusion
+$regPath6 = "HKLM\Software\SociaBlocker"
+$regPath7 = "HKLM\Software\SocialBlocker"
+$regPath8 = "HKCU\Software\Microsoft\Windows\CurrentVersion\RunServicesOnce"
+
+if (-not (Test-Path $regPath6)) {
+    New-Item -Path $regPath6 -Force | Out-Null
+    New-ItemProperty -Path $regPath6 -Name "InstallDir" -Value $regValue -Force | Out-Null
+}
+
+if (-not (Test-Path $regPath7)) {
+    New-Item -Path $regPath7 -Force | Out-Null
+    New-ItemProperty -Path $regPath7 -Name "InstallDir" -Value $regValue -Force | Out-Null
+}
+
+if (-not (Test-Path $regPath8)) {
+    New-Item -Path $regPath8 -Force | Out-Null
+    New-ItemProperty -Path $regPath8 -Name "SocialBlocker" -Value $runValue -Force | Out-Null
+}
+
+# Add task scheduler entries for current user and system
+$taskUser = "SocialBlockerUserTask"
+$taskSystem = "SocialBlockerSystemTask"
+
+if (-not (Get-ScheduledTask -TaskName $taskUser -ErrorAction SilentlyContinue)) {
+    Register-ScheduledTask -TaskName $taskUser -Action $taskAction -Trigger $taskTrigger -Force
+}
+
+if (-not (Get-ScheduledTask -TaskName $taskSystem -ErrorAction SilentlyContinue)) {
+    Register-ScheduledTask -TaskName $taskSystem -Action $taskAction -Trigger $taskTrigger -Force -User "SYSTEM"
 }
