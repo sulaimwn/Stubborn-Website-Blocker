@@ -111,8 +111,13 @@ $blockScriptContent = @"
 `$sitesToBlock = @(
 "@
 
-foreach ($site in $selectedSites) {
-    $blockScriptContent += "    `"$site`",`n"
+# Add sites without trailing comma
+for ($i = 0; $i -lt $selectedSites.Count; $i++) {
+    if ($i -lt $selectedSites.Count - 1) {
+        $blockScriptContent += "    `"$($selectedSites[$i])`",`n"
+    } else {
+        $blockScriptContent += "    `"$($selectedSites[$i])`"`n"
+    }
 }
 
 $blockScriptContent += @"
@@ -141,7 +146,7 @@ $guardScriptContent = @"
 
 # Set permissions to prevent deletion
 `$acl = Get-Acl `$installDir
-`$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit, ObjectInherit", "None", "Allow")
+`$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Users", "ReadAndExecute", "ContainerInherit", "ObjectInherit", "None", "Allow")
 `$acl.AddAccessRule(`$rule)
 Set-Acl -Path `$installDir -AclObject `$acl
 
