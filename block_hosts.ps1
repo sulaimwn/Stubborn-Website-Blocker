@@ -30,7 +30,7 @@ function Restore-ScheduledTasks {
     if (-not $watchdogTaskExists) {
         Write-Host "Restoring SocialBlockerWatchdog task..."
         $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File $blockScript"
-        $taskTrigger = New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
+        $taskTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
         Register-ScheduledTask -TaskName "SocialBlockerWatchdog" -Action $taskAction -Trigger $taskTrigger -Force
     }
 }
