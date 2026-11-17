@@ -180,6 +180,9 @@ $doneButton = New-Object System.Windows.Forms.Button
 $doneButton.Location = New-Object System.Drawing.Point(100,90)
 $doneButton.Size = New-Object System.Drawing.Size(100,23)
 $doneButton.Text = "OK"
+$doneButton.Add_Click({
+    $doneForm.Close()
+})
 $doneForm.Controls.Add($doneButton)
 
-$doneForm.ShowDialog()
+[void]$doneForm.ShowDialog()
