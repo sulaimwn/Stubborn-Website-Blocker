@@ -25,14 +25,7 @@ Windows 11
 ## Install folder
 C:\Program Files\SocialBlocker
 
-## Windows service
-- Service name: SocialBlockerService
-- Display name: SocialBlocker Service
-- Run as: LocalSystem
-- Start type: Automatic
-- Purpose: keep the block active, monitor persistence, and restore missing pieces.
-
-## Scheduled tasks
+## Scheduled tasks (instead of Windows service)
 - SocialBlockerRestore
   - Runs at startup and user logon.
   - Restores the service, install files, and hosts entries if they are missing.
@@ -44,25 +37,23 @@ C:\Program Files\SocialBlocker
 - Edit the Windows hosts file at C:\Windows\System32\drivers\etc\hosts.
 - Point the blocked domains to 127.0.0.1.
 - block_hosts.ps1 is responsible for adding or restoring those entries.
-- SocialBlockerService.exe re-applies the block when it detects the hosts file was changed.
+- SocialBlockerWatchdog scheduled task re-applies the block when it detects the hosts file was changed.
 
 ## Persistence and anti-uninstall behaviour
-- installer.ps1 installs the files, registers the Windows service, and creates the scheduled tasks.
+- installer.ps1 installs the files, registers the Windows service, creates the scheduled tasks.
 - uninstall_guard.ps1 protects the install from being removed or disabled.
-- The service and scheduled tasks should restore each other if one is deleted or stopped.
+- The scheduled tasks should restore each other if one is deleted or stopped.
 - There is no normal visible uninstaller unless one is explicitly added later.
 
 ## Exact project file list
 - CONTEXT.md
 - installer.ps1
-- SocialBlockerService.exe
 - block_hosts.ps1
 - uninstall_guard.ps1
 
 ## File responsibilities
 - CONTEXT.md: stores the full project context so work can continue after a chat clear.
 - installer.ps1: installs SocialBlocker into C:\Program Files\SocialBlocker, registers the service, creates the scheduled tasks, and applies the initial block.
-- SocialBlockerService.exe: long-running Windows service that enforces the block and restores persistence.
 - block_hosts.ps1: adds or restores the hosts file entries for the blocked domains.
 - uninstall_guard.ps1: prevents the blocker from being easily disabled or uninstalled.
 

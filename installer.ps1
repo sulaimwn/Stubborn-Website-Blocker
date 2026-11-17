@@ -70,7 +70,6 @@ if (!(Test-Path $installDir)) {
 }
 
 # Copy files (assuming they exist in current directory)
-Copy-Item ".\SocialBlockerService.exe" "$installDir\" -Force
 Copy-Item ".\block_hosts.ps1" "$installDir\" -Force
 Copy-Item ".\uninstall_guard.ps1" "$installDir\" -Force
 
@@ -122,11 +121,6 @@ attrib +h +s "`$installDir"
 "@
 
 $guardScriptContent | Out-File "$installDir\uninstall_guard.ps1" -Force
-
-# Install Windows service
-$servicePath = "`"$installDir\SocialBlockerService.exe`""
-sc create SocialBlockerService binPath= $servicePath DisplayName= "SocialBlocker Service" start= auto
-sc description SocialBlockerService "Keeps the block active and monitors persistence"
 
 # Create scheduled tasks
 $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File `"$installDir\block_hosts.ps1`""
