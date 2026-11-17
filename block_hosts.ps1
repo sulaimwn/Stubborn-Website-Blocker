@@ -1,5 +1,5 @@
 # SocialBlocker block script
-# This script adds entries to the hosts file for selected sites
+# This script adds entries to the hosts file for selected sites and restores scheduled tasks
 
 $hostsPath = "C:\Windows\System32\drivers\etc\hosts"
 $sitesToBlock = @(
@@ -10,6 +10,33 @@ $sitesToBlock = @(
     "x.com",
     "www.x.com"
 )
+
+# Function to restore scheduled tasks
+function Restore-ScheduledTasks {
+    $installDir = "C:\Program Files\SocialBlocker"
+    $blockScript = "`"$installDir\block_hosts.ps1`""
+    
+    # Check if SocialBlockerRestore task exists
+    $restoreTaskExists = Get-ScheduledTask -TaskName "SocialBlockerRestore" -ErrorAction SilentlyContinue
+    if (-not $restoreTaskExists) {
+        Write-Host "Restoring SocialBlockerRestore task..."
+        $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File $blockScript"
+        $taskTrigger = New-ScheduledTaskTrigger -AtLogOn
+        Register-ScheduledTask -TaskName "SocialBlockerRestore" -Action $taskAction -Trigger $taskTrigger -Force
+    }
+    
+    # Check if SocialBlockerWatchdog task exists
+    $watchdogTaskExists = Get-ScheduledTask -TaskName "SocialBlockerWatchdog" -ErrorAction SilentlyContinue
+    if (-not $watchdogTaskExists) {
+        Write-Host "Restoring SocialBlockerWatchdog task..."
+        $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File $blockScript"
+        $taskTrigger = New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 9999)
+        Register-ScheduledTask -TaskName "SocialBlockerWatchdog" -Action $taskAction -Trigger $taskTrigger -Force
+    }
+}
+
+# Restore scheduled tasks first
+Restore-ScheduledTasks
 
 # Read existing hosts file
 $existingContent = Get-Content $hostsPath -ErrorAction SilentlyContinue
