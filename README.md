@@ -48,7 +48,8 @@ This was built using various tools and AI assistance:
 - **Language:** PowerShell
 - **GUI:** Windows Forms
 - **Persistence:** Scheduled tasks, registry entries, environment variables
-- **AI assistance:** Built using ArliAI GLM-4.5-Air (Derestricted) model from Hugging Face, served via RunPod with llama.cpp. Regular restricted models like Claude and Codex denied building this so I had to use a derestricted model.
+- **AI assistance:** Built using [ArliAI GLM-4.5-Air (Derestricted) model](https://huggingface.co/ArliAI/GLM-4.5-Air-Derestricted) from Hugging Face, served via RunPod with llama.cpp. Regular restricted models like Claude and Codex denied building this so I had to use a derestricted model.
+- **GPU** NVIDIA RTX PRO 6000
 - **Development environment:** Coded using aider chat interface
 
 ## Warnings
