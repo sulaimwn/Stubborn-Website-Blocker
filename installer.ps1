@@ -15,7 +15,7 @@ $defaultSites = @(
 Add-Type -AssemblyName System.Windows.Forms
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "SocialBlocker Site Selection"
-$form.Size = New-Object System.Drawing.Size(400,300)
+$form.Size = New-Object System.Drawing.Size(400,350)
 $form.StartPosition = "CenterScreen"
 
 $label = New-Object System.Windows.Forms.Label
@@ -26,7 +26,7 @@ $form.Controls.Add($label)
 
 $checkedListBox = New-Object System.Windows.Forms.CheckedListBox
 $checkedListBox.Location = New-Object System.Drawing.Point(10,50)
-$checkedListBox.Size = New-Object System.Drawing.Size(360,200)
+$checkedListBox.Size = New-Object System.Drawing.Size(360,150)
 $checkedListBox.CheckOnClick = $true
 
 # Add default sites to the list
@@ -41,8 +41,22 @@ for ($i = 0; $i -lt $checkedListBox.Items.Count; $i++) {
 
 $form.Controls.Add($checkedListBox)
 
+# Add text box for custom sites
+$customLabel = New-Object System.Windows.Forms.Label
+$customLabel.Location = New-Object System.Drawing.Point(10,210)
+$customLabel.Size = New-Object System.Drawing.Size(360,20)
+$customLabel.Text = "Add custom sites (one per line):"
+$form.Controls.Add($customLabel)
+
+$customTextBox = New-Object System.Windows.Forms.TextBox
+$customTextBox.Location = New-Object System.Drawing.Point(10,230)
+$customTextBox.Size = New-Object System.Drawing.Size(360,50)
+$customTextBox.Multiline = $true
+$customTextBox.ScrollBars = "Vertical"
+$form.Controls.Add($customTextBox)
+
 $okButton = New-Object System.Windows.Forms.Button
-$okButton.Location = New-Object System.Drawing.Point(150,260)
+$okButton.Location = New-Object System.Drawing.Point(150,290)
 $okButton.Size = New-Object System.Drawing.Size(75,23)
 $okButton.Text = "OK"
 $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
@@ -53,11 +67,26 @@ $result = $form.ShowDialog()
 
 if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
     $selectedSites = @()
+    
+    # Get selected default sites
     for ($i = 0; $i -lt $checkedListBox.Items.Count; $i++) {
         if ($checkedListBox.GetItemChecked($i)) {
             $selectedSites += $checkedListBox.Items[$i]
         }
     }
+    
+    # Get custom sites from text box
+    $customSites = $customTextBox.Text.Split("`n") | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
+    foreach ($site in $customSites) {
+        # Add www prefix if not present
+        if ($site -notlike "*www.*" -and $site -notlike "*.*") {
+            $selectedSites += "www.$site"
+        }
+        $selectedSites += $site
+    }
+    
+    # Remove duplicates
+    $selectedSites = $selectedSites | Select-Object -Unique
 } else {
     # If user cancels, use default sites
     $selectedSites = $defaultSites
